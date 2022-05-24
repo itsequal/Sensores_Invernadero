@@ -2,10 +2,11 @@
 class actuators{
   public:
     void relay( int );
+    bool BombState;
 
     //LCD (display)
     void lcd_init( void );
-    long printLCD( long );
+    long printLCD( void );
     
     //MircoSD
     void MicroSD_init( void );
@@ -30,9 +31,11 @@ void actuators::relay(int value){
   {
     Serial.println("Encendiendo bomba");
     digitalWrite(Pins.PinRB, LOW);
+    BombState = true;
   } else {
     Serial.println("Apagando bomba");
     digitalWrite(Pins.PinRB, HIGH);
+    BombState = false;
   }
 }
 
@@ -44,10 +47,10 @@ void actuators::lcd_init( void ){
 }
 
 //Funcion que imprime los datos de los sensores en la pantalla
-long actuators::printLCD( long m4s ){
+long actuators::printLCD( ){
   //setCursor nos pone en el pixel elegido de la pantalla de 16x4
   lcd.setCursor(0,0);
-  //print escribe el dato que ingresemos dentro del parentesis
+   //print escribe el dato que ingresemos dentro del parentesis
   lcd.print("H: ");
   lcd.print(Sen.HumTierra());
   lcd.setCursor(8,0);
@@ -58,18 +61,20 @@ long actuators::printLCD( long m4s ){
   lcd.print(Sen.TempClima());
   lcd.setCursor(8,1);
   lcd.print("L:");
-  lcd.print(Sen.Caudal(m4s));
+  lcd.print(Sen.Caudal());
 }
 
 //Funcion de inicio del reloj en tiempo real
 void actuators :: rtc_init( void ){
-  //Se utiliza un ciclo While para validar en caso de que haya una desconexion, begin inicializa el reloj
+//Se utiliza un ciclo While para validar en caso de que haya una desconexion, begin inicializa el reloj
   while (! RRTC.begin()) {
+    
     Serial.println(F("Hay un error al reconocer el RTC, revise las conexiónes e intente de nuevo"));
     delay(10);
+    
   }
   //Adjust establece una fecha inicial a partir de la cual se iniciará el conteo
-  RRTC.adjust(DateTime(2022, 5, 18, 9, 0, 0));
+  //RRTC.adjust(DateTime(2022, 5, 18, 9, 0, 0));
   Serial.println(F("El RTC se ha iniciado correctamente"));
 }
 
@@ -144,8 +149,6 @@ void actuators :: FileID( void ){
 
 //Funcion donde se empaqueta la información en forma de JSON (información de los sensores y del equipo)
 void actuators :: JSON( void ){
-  doc["Equipo"] = "1 - Alfa Buena Maravilla Onda Dinamita Escuadron Lobo";
-  doc["tiempo"] = fecha+" "+tiempo;
   JSON_SaveFile( &doc );
 }
 
@@ -161,3 +164,17 @@ void actuators :: JSON_SaveFile( DynamicJsonDocument * doc){
     MicroSD_File.close();
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

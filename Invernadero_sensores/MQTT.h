@@ -2,10 +2,9 @@
 const char* HOTSPOT_WIFI = "HOTSPOT";
 const char* HOTSPOT_PWD = "123456789";  
 const char* MQTT_SERVER = "test.mosquitto.org";
-
 //Se define el puerto MQTT y el Topic
 #define MQTT_PORT 1883
-#define TOPIC "20164773"
+#define TOPIC "6D/E1"
 
 //Clase donde se inicializan las funciones de MQTT
 class MQTT {
@@ -29,15 +28,21 @@ void MQTT :: publish_MQTT ( void ) {
 
 //Funcion que valida la conexion al cliente; tambien se usa para comenzar la conexion por primera vez para ahorrarnos una funcion extra de conexion
 void MQTT :: reconnect_MQTT ( void ) {
-  //connected verifica si es verdadera o falsa la conexion
-  if (!client.connected()){
-    while (!client.connected()){ 
+//connected verifica si es verdadera o falsa la conexion
+if ( ! client.connected ( ) ) {
+
+    while ( ! client.connected ( ) ) {
+      
     Serial.print ( "Conectado nuevamente al servidor" );
-    //client.connect realiza la conexion al Topic elegido
-    if ( client.connect ( "E1_6D" ) ) {     
+
+//client.connect realiza la conexion al Topic elegido
+if ( client.connect ( "6D/E1/INFO" ) ) {
+      
       Serial.println ( "Cliente conectado" );
+      
       //Se hace la suscripcion al Topic seleccionado      
-      client.subscribe("E1_6D");      
+	  client.subscribe("6D/E1/INFO");
+      
     } else {
         Serial.print("failed, rc=");
         Serial.print(client.state());
@@ -51,18 +56,20 @@ void MQTT :: reconnect_MQTT ( void ) {
 }
 
 
+
 //Funcion que realiza la conexion a la red Wi-Fi
 void MQTT :: setup_WiFi ( void ) {
   Serial.println ( "Configurando WiFi: " );
-  //Especificas dentro el SSID y la contraseña
   WiFi.begin ( HOTSPOT_WIFI, HOTSPOT_PWD );
-  //Pequeño delay que se da si no hay una conexion a la red
+  
   while ( WiFi.status ( ) != WL_CONNECTED ) {
     delay ( 500 );
     Serial.print ( "." );
   }
+  
   Serial.println("Se configuró el wifi correctamente");//Salto de linea
 }
+
 
 /*
 Funcion que retorna la informacion que viene del Topic elegido en el Subscribe; tiene que tomarse encuenta el hecho
@@ -73,9 +80,8 @@ void callback(char* topic, byte* message, unsigned int length) {
   Serial.print("Message arrived on topic: ");
   Serial.print(topic);
   Serial.print(". Message: ");
-  //Funcion donde irá el mensaje completo
   String messageTemp;
-  //Ciclo donde se reconstruye el mensaje
+  
   for (int i = 0; i < length; i++) {
     Serial.print((char)message[i]);
     messageTemp += (char)message[i];

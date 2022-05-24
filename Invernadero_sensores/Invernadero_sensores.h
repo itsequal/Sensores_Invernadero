@@ -1,12 +1,10 @@
-//WIFI
 #include <WiFi.h>
   WiFiClient ESP32_WIFI;
-
+  
 #define MICROSD_PIN 5
 //Extension que va a tener el archivo a guardar en la memoria SD
 #define EXTENSION ".json"
 
-//CLIENTE DE MQTT
 #include <PubSubClient.h>
   PubSubClient client ( ESP32_WIFI );
   
@@ -14,7 +12,7 @@
 #include <ArduinoJson.h>
 DynamicJsonDocument doc(1024);
   
-//MICRO SD ADAPTER
+// Micro SD adapter
 #include <SD.h>
 #include <SPI.h>
 File MicroSD_File;
@@ -28,13 +26,15 @@ LiquidCrystal_I2C lcd(0x27,16,2);//0x27
 #include "RTClib.h"
 RTC_DS1307 RRTC;
 
+
 //PINES
 #include "pines.h"
 pines Pins;
 
+
 //SENSORES
 #include <OneWire.h>
-OneWire tempClima(Pins.PinC);
+OneWire tempClima(13);
 
 //LIBRERIA PARA EL SENSOR DE TEMPERATURA
 #include <DallasTemperature.h>
@@ -47,7 +47,6 @@ sensors Sen;
 //ACTUADORES
 #include "actuators.h"
 actuators Act;
-
 //MQTT
 #include "MQTT.h"
  MQTT mqtt;
